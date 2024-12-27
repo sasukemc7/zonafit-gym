@@ -43,17 +43,23 @@ public class ZonaFitApplication implements CommandLineRunner {
 				Elige una de las anteriores opciones:\s""");
 
 			var opcion = Integer.parseInt(consola.nextLine());
-
-			switch (opcion){
-				case 1 -> listarClientes();
-				case 2 -> buscarCliente(consola);
-				case 3 -> agregarCliente(consola);
-				case 6 -> {
-						salir=true;
-				}
-				default -> logger.info("Opcion Invalida.");
-			}
+			salir=elegirOpcion(consola, opcion);
 		}
+	}
+
+	private boolean elegirOpcion(Scanner consola, int opcion){
+		switch (opcion){
+			case 1 -> listarClientes();
+			case 2 -> buscarCliente(consola);
+			case 3 -> agregarCliente(consola);
+			case 4 -> modificarCliente(consola);
+			case 5 -> eliminarCliente(consola);
+			case 6 -> {
+				return true;
+			}
+			default -> logger.info("Opcion Invalida.");
+		}
+		return false;
 	}
 
 	private void listarClientes(){
@@ -96,6 +102,53 @@ public class ZonaFitApplication implements CommandLineRunner {
 
 		guardarCliente(cliente);
 		logger.info("¡Cliente guardado con exito!");
+		listarClientes();
+	}
+
+	private void modificarCliente(Scanner consola){
+		logger.info("--- Modificar Cliente ---");
+		logger.info("¿Cual es el id del cliente a modificar?: ");
+		var idCliente = Integer.parseInt(consola.nextLine());
+
+		var cliente = clienteServicio.buscarClientePorId(idCliente);
+
+		if(cliente == null){
+			logger.info("¡Cliente no encontrado!");
+			return;
+		}
+
+		logger.info("Nombre del cliente: ");
+		var nombreCliente = consola.nextLine();
+
+		logger.info("Apellido del cliente: ");
+		var apellidoCliente = consola.nextLine();
+
+		logger.info("Membresia del cliente: ");
+		var membresiaCliente = Integer.parseInt(consola.nextLine());
+
+		cliente.setNombre(nombreCliente);
+		cliente.setApellido(apellidoCliente);
+		cliente.setMembresia(membresiaCliente);
+
+		clienteServicio.guardarCliente(cliente);
+		logger.info("¡Cliente modificado con exito!");
+		listarClientes();
+	}
+
+	private void eliminarCliente(Scanner consola){
+		logger.info("--- Eliminar Cliente ---");
+		logger.info("¿Cual es el id del cliente a eliminar?: ");
+		var idCliente = Integer.parseInt(consola.nextLine());
+
+		var cliente = clienteServicio.buscarClientePorId(idCliente);
+
+		if(cliente == null){
+			logger.info("¡Cliente no encontrado!");
+			return;
+		}
+
+		clienteServicio.eliminarCliente(cliente);
+		logger.info("¡Cliente eliminado con exito!");
 		listarClientes();
 	}
 }
